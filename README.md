@@ -74,3 +74,16 @@ Details: [`problem-6/README.md`](problem-6/README.md).
 | **problem-6** | Architecture & spec | Markdown, Mermaid |
 
 **Prerequisites:** Node.js 20+ for problem-4 (`ts-node`) and problem-5 (`npm`).
+
+---
+
+## CI (GitHub Actions)
+
+On **push** or **pull request** to `main`, [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs `npm ci`, `npm run build`, and `npm test` in `problem-5`.
+
+To **block merging** until tests pass:
+
+1. Repo **Settings** → **Branches** → **Add branch protection rule** for `main`.
+2. Enable **Require status checks to pass before merging**.
+3. Search and select the check named **`Test (problem-5)`** (or **`CI / test`** depending on GitHub UI).
+4. (Recommended) **Require a pull request before merging** and disallow direct pushes to `main`.
