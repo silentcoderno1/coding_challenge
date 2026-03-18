@@ -25,7 +25,7 @@ export class ResourceController {
       skip,
       take: limit,
     };
-    if (query.status === "active" || query.status === "inactive")
+    if (query.status === ResourceStatus.ACTIVE || query.status === ResourceStatus.INACTIVE)
       params.status = query.status as ResourceStatus;
     if (query.search !== undefined && query.search.trim() !== "")
       params.search = query.search.trim();

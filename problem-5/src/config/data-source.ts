@@ -1,17 +1,18 @@
 import "reflect-metadata";
+import path from "path";
 import { DataSource } from "typeorm";
 import { env } from "./env";
 import { Resource } from "../entities/Resource.entity";
 
 const isDev = env.NODE_ENV !== "production";
 
+const databasePath = path.isAbsolute(env.SQLITE_DATABASE)
+  ? env.SQLITE_DATABASE
+  : path.resolve(process.cwd(), env.SQLITE_DATABASE);
+
 export const AppDataSource = new DataSource({
-  type: "postgres",
-  host: env.DB_HOST,
-  port: env.DB_PORT,
-  username: env.DB_USERNAME,
-  password: env.DB_PASSWORD,
-  database: env.DB_NAME,
+  type: "better-sqlite3",
+  database: databasePath,
   synchronize: isDev,
   logging: true,
   entities: [Resource],

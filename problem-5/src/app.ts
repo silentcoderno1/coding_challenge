@@ -43,7 +43,9 @@ export function createApp(options?: CreateAppOptions): Express {
     options?.repository ??
     new ResourceRepository(AppDataSource.getRepository(Resource));
   const resourceListCache =
-    options?.cache ?? new ResourceListCache(getRedis());
+    options?.cache !== undefined
+      ? options.cache
+      : new ResourceListCache(getRedis());
   const resourceService = new ResourceService(resourceRepository, resourceListCache);
   const resourceController = new ResourceController(resourceService);
   const resourceRouter = createResourceRouter(resourceController);

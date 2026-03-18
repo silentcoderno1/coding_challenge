@@ -21,7 +21,7 @@
     "express": "^4.21.0",
     "helmet": "^8.0.0",
     "morgan": "^1.10.0",
-    "pg": "^8.13.0",
+    "better-sqlite3": "^11.6.0",
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.20"
   },

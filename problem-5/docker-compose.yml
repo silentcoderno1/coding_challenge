@@ -1,24 +1,8 @@
+# App + Redis only. SQLite file is stored in ./data (mounted for persistence).
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: server-postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: app_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d app_db"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   redis:
     image: redis:7-alpine
-    container_name: server-redis
+    container_name: problem-5-redis
     ports:
       - "6379:6379"
     healthcheck:
@@ -31,25 +15,20 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: server-app
+    container_name: problem-5-app
     environment:
-      # Use development so TypeORM synchronize creates schema on first run
       NODE_ENV: development
       PORT: 3000
       LOG_LEVEL: dev
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: app_db
+      SQLITE_DATABASE: /app/data/app.sqlite
       REDIS_URL: redis://redis:6379
     ports:
       - "3000:3000"
+    volumes:
+      - sqlite_data:/app/data
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
 
 volumes:
-  postgres_data:
+  sqlite_data:

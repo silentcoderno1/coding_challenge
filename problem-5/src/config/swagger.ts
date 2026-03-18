@@ -34,7 +34,7 @@ export const swaggerDocument = {
           { name: "page", in: "query", schema: { type: "integer", minimum: 1, default: 1 }, description: "Page number" },
           { name: "limit", in: "query", schema: { type: "integer", minimum: 1, maximum: 100, default: 20 }, description: "Items per page" },
           { name: "status", in: "query", schema: { type: "string", enum: ["active", "inactive"] }, description: "Filter by status" },
-          { name: "search", in: "query", schema: { type: "string" }, description: "Search by name (ILIKE)" },
+          { name: "search", in: "query", schema: { type: "string" }, description: "Search by name (case-insensitive)" },
           { name: "sort", in: "query", schema: { type: "string", enum: ["asc", "desc"], default: "desc" }, description: "Sort by createdAt" },
         ],
         responses: {

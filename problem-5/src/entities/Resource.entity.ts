@@ -24,7 +24,7 @@ export class Resource {
   description!: string;
 
   @Column({
-    type: "enum",
+    type: "simple-enum",
     enum: ResourceStatus,
     default: ResourceStatus.ACTIVE,
   })

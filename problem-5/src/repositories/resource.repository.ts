@@ -48,7 +48,8 @@ export class ResourceRepository implements IResourceRepository {
       qb.andWhere("resource.status = :status", { status });
     }
     if (search !== undefined && search.trim() !== "") {
-      qb.andWhere("resource.name ILIKE :search", {
+      // SQLite: case-insensitive search (ILIKE is PostgreSQL-only)
+      qb.andWhere("LOWER(resource.name) LIKE LOWER(:search)", {
         search: `%${search.trim()}%`,
       });
     }
