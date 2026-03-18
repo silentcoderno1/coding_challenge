@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
+import { HttpStatusCode } from "../constants/http-status-code";
 
 export function notFoundHandler(_req: Request, res: Response): void {
-  res.status(404).json({ error: "Not found" });
+  res.status(HttpStatusCode.NOT_FOUND).json({ error: "Not found" });
 }

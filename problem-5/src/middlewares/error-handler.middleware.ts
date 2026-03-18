@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { HttpStatusCode } from "../constants/http-status-code";
 import { AppError, ValidationError } from "../errors";
 import { logger } from "../config/logger";
 
@@ -44,11 +45,11 @@ export function errorHandler(
   if (isDatabaseError(err)) {
     logger.error("Database error", { error: err.message, name: err.name });
     response.message = "A database error occurred. Please try again later.";
-    res.status(500).json(response);
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(response);
     return;
   }
 
   logger.error("Unhandled error", { error: err.message, stack: err.stack });
   response.message = "Internal server error";
-  res.status(500).json(response);
+  res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json(response);
 }

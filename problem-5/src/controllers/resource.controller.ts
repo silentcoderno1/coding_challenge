@@ -3,6 +3,7 @@ import type { ResourceService } from "../services/resource.service";
 import type { CreateResourceDto, UpdateResourceDto } from "../dtos/resource.dto";
 import type { FindAllResourcesQuery } from "../repositories/resource.repository";
 import { ResourceStatus } from "../entities/Resource.entity";
+import { HttpStatusCode } from "../constants/http-status-code";
 import { sendSuccess } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
 
@@ -12,7 +13,7 @@ export class ResourceController {
   create = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const dto = req.body as CreateResourceDto;
     const resource = await this.resourceService.createResource(dto);
-    sendSuccess(res, resource, 201, "Resource created");
+    sendSuccess(res, resource, HttpStatusCode.CREATED, "Resource created");
   });
 
   getResources = asyncHandler(async (req: Request, res: Response): Promise<void> => {
@@ -33,7 +34,7 @@ export class ResourceController {
     params.sortOrder = sortOrder;
 
     const { data, total } = await this.resourceService.getResources(params);
-    res.status(200).json({
+    res.status(HttpStatusCode.OK).json({
       data,
       meta: { total, page, limit },
     });
@@ -49,12 +50,12 @@ export class ResourceController {
     const id = req.params.id as string;
     const dto = req.body as UpdateResourceDto;
     const resource = await this.resourceService.updateResource(id, dto);
-    sendSuccess(res, resource, 200, "Resource updated");
+    sendSuccess(res, resource, HttpStatusCode.OK, "Resource updated");
   });
 
   delete = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const id = req.params.id as string;
     await this.resourceService.deleteResource(id);
-    sendSuccess(res, null, 200, "Resource deleted");
+    sendSuccess(res, null, HttpStatusCode.OK, "Resource deleted");
   });
 }
