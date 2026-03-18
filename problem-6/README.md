@@ -165,31 +165,31 @@ sequenceDiagram
     participant Idem as Idempotency
     participant DB as PostgreSQL
     participant Redis as Redis
-    participant Pub as Pub/Sub
+    participant Pub as PubSub
     participant SSE as SSE Clients
 
-    C->>API: POST /scores { points, actionId?, idempotencyKey? } + Authorization
-    API->>Auth: Verify JWT, get userId
-    Auth-->>API: userId (or 401)
-    API->>API: Rate limit check → 429 if exceeded
-    API->>API: Validate points range (server-side)
-    alt idempotencyKey present
+    C->>API: POST /scores JSON body plus Authorization header
+    API->>Auth: Verify JWT get userId
+    Auth-->>API: userId or 401
+    API->>API: Rate limit check return 429 if exceeded
+    API->>API: Validate points range server-side
+    alt idempotency key present
         API->>Idem: Lookup key for userId
         Idem-->>API: cached response or miss
         alt cache hit
             API-->>C: 200 cached response
         end
     end
-    API->>DB: BEGIN; update user score; insert event; COMMIT
-    API->>Redis: ZADD leaderboard:global score userId
-    API->>Pub: PUBLISH scoreboard:updated
-    API->>Idem: Store idempotencyKey → response (TTL 24h)
-    API-->>C: 200 { score, rank }
-    Pub->>API: (each instance) receive event
-    API->>Redis: ZREVRANGE leaderboard:global 0 9
-    Redis-->>API: top10
-    API->>SSE: Send event: { top10 }
-    SSE->>C: (all subscribed clients) receive update
+    API->>DB: Transaction update score insert event commit
+    API->>Redis: ZADD leaderboard score for userId
+    API->>Pub: PUBLISH scoreboard updated channel
+    API->>Idem: Store idempotency key and response TTL 24h
+    API-->>C: 200 with score and rank
+    Pub-->>API: Each instance receives event
+    API->>Redis: ZREVRANGE top 10
+    Redis-->>API: top10 payload
+    API->>SSE: Push leaderboard event to subscribers
+    SSE->>C: Clients receive updated top10
 ```
 
 ### 3.3 Critical Points Summary

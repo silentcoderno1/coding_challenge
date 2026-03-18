@@ -1,17 +1,17 @@
 # Resources API
 
-REST API quản lý **Resources** (Express + TypeORM + **SQLite**). CRUD, phân trang, lọc, soft delete, cache Redis (tùy chọn), Swagger. **Không cần cài PostgreSQL** — chỉ cần Node.js là chạy được.
+REST API for **Resources** (Express + TypeORM + **SQLite**). CRUD, pagination, filtering, soft delete, optional Redis caching, Swagger. **No PostgreSQL required** — Node.js is enough to run locally.
 
 ---
 
 ## Overview
 
-- **API:** `/api/v1/resources` (CRUD + list có `page`, `limit`, `status`, `search`, `sort`)
-- **Database:** **SQLite** (file `data/app.sqlite` mặc định) — tự tạo file và thư mục khi chạy
-- **Cache:** Redis tùy chọn (`REDIS_URL` rỗng = tắt cache)
-- **Docs:** Swagger UI tại `/api-docs`
+- **API:** `/api/v1/resources` (CRUD + list with `page`, `limit`, `status`, `search`, `sort`)
+- **Database:** **SQLite** (default file `data/app.sqlite`) — file and parent directory are created on startup
+- **Cache:** Optional Redis (`REDIS_URL` empty = caching disabled)
+- **Docs:** Swagger UI at `/api-docs`
 
-Response: `{ success, data, message? }` hoặc lỗi `{ success: false, message }`.
+Responses: `{ success, data, message? }` on success, or `{ success: false, message }` on error.
 
 ---
 
@@ -33,7 +33,7 @@ Response: `{ success, data, message? }` hoặc lỗi `{ success: false, message 
 
 ## Architecture
 
-Luồng: **HTTP** → controllers → services → **SQLite** (repository) + Redis (cache list, optional).
+Flow: **HTTP** → controllers → services → **SQLite** (repository) + Redis (optional list cache).
 
 ```
 routes → controllers → middlewares → ResourceService → ResourceRepository (TypeORM + SQLite)
@@ -41,14 +41,14 @@ routes → controllers → middlewares → ResourceService → ResourceRepositor
 
 ---
 
-## Setup nhanh (local)
+## Quick setup (local)
 
-### Yêu cầu
+### Prerequisites
 
-- **Node.js 20+**  
-- **Redis:** chỉ khi bật cache (có thể bỏ qua)
+- **Node.js 20+**
+- **Redis:** only if you enable caching (can be skipped)
 
-### 1. Cài đặt
+### 1. Install
 
 ```bash
 cd problem-5
@@ -56,19 +56,19 @@ npm install
 cp .env.example .env
 ```
 
-### 2. Biến môi trường (`.env`)
+### 2. Environment (`.env`)
 
-| Variable | Mặc định | Mô tả |
-|----------|----------|--------|
-| `NODE_ENV` | development | `development` → TypeORM `synchronize: true` (tạo bảng tự động) |
-| `PORT` | 3000 | Cổng server |
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `NODE_ENV` | development | In `development`, TypeORM uses `synchronize: true` (auto schema) |
+| `PORT` | 3000 | Server port |
 | `LOG_LEVEL` | dev | Morgan: `dev` \| `combined` |
-| **`SQLITE_DATABASE`** | `data/app.sqlite` | Đường dẫn file SQLite (tương đối project root hoặc absolute) |
-| `REDIS_URL` | (rỗng) | Ví dụ `redis://localhost:6379` — để trống = không cache list |
+| **`SQLITE_DATABASE`** | `data/app.sqlite` | SQLite file path (relative to project root or absolute) |
+| `REDIS_URL` | (empty) | e.g. `redis://localhost:6379` — leave empty to disable list cache |
 
-**Không cần tạo database trước:** thư mục `data/` và file `.sqlite` được tạo khi start server (dev).
+**No manual DB creation:** the `data/` folder and `.sqlite` file are created when you start the server (dev).
 
-### 3. Chạy
+### 3. Run
 
 ```bash
 npm run dev
@@ -85,13 +85,13 @@ npm run build
 npm start
 ```
 
-Với `NODE_ENV=production`, TypeORM **không** synchronize — cần migrations để tạo schema (hoặc tạo DB một lần bằng dev rồi copy file SQLite).
+With `NODE_ENV=production`, TypeORM **does not** synchronize — use migrations for schema (or bootstrap once in dev and copy the SQLite file).
 
 ---
 
 ## Docker Compose
 
-Chạy app + Redis; SQLite lưu trong volume `sqlite_data` (persist tại `/app/data` trong container).
+Runs app + Redis; SQLite is stored in volume `sqlite_data` (persisted at `/app/data` in the container).
 
 ```bash
 docker compose up --build
@@ -99,9 +99,9 @@ docker compose up --build
 
 - App: http://localhost:3000  
 - Redis: localhost:6379  
-- **Không còn service PostgreSQL** — chỉ SQLite + Redis.
+- **No PostgreSQL service** — SQLite + Redis only.
 
-Image Alpine cần build native cho `better-sqlite3` (Dockerfile đã cài `python3`, `make`, `g++`).
+The Alpine image builds native `better-sqlite3` (Dockerfile installs `python3`, `make`, `g++`).
 
 ---
 
@@ -111,45 +111,45 @@ Image Alpine cần build native cho `better-sqlite3` (Dockerfile đã cài `pyth
 npm test
 ```
 
-Integration test dùng `FakeResourceRepository` — **không** cần SQLite/Redis khi chạy test.
+Integration tests use `FakeResourceRepository` — **no** SQLite or Redis required to run tests.
 
 ---
 
-## API (tóm tắt)
+## API (summary)
 
-| Method | Path | Mô tả |
-|--------|------|--------|
+| Method | Path | Description |
+|--------|------|-------------|
 | GET | `/health` | Health check |
-| GET | `/api/v1/resources` | List (pagination, `status`, `search` case-insensitive, `sort`) |
-| POST | `/api/v1/resources` | Tạo |
-| GET | `/api/v1/resources/:id` | Chi tiết |
-| PUT | `/api/v1/resources/:id` | Cập nhật |
+| GET | `/api/v1/resources` | List (pagination, `status`, case-insensitive `search`, `sort`) |
+| POST | `/api/v1/resources` | Create |
+| GET | `/api/v1/resources/:id` | Get one |
+| PUT | `/api/v1/resources/:id` | Update |
 | DELETE | `/api/v1/resources/:id` | Soft delete |
 
-Chi tiết và ví dụ: **Swagger UI** (`/api-docs`).
+Details and examples: **Swagger UI** (`/api-docs`).
 
 ---
 
-## Design Decisions
+## Design decisions
 
-### SQLite thay PostgreSQL
+### SQLite instead of PostgreSQL
 
-- **Chạy tiện:** không cài server DB; một file `.sqlite` cho dev/local.
-- **TypeORM:** `better-sqlite3` driver; entity dùng `simple-enum` cho `status` (tương thích SQLite).
-- **Search:** `LOWER(name) LIKE LOWER(:pattern)` thay cho `ILIKE` (PostgreSQL-only).
+- **Convenience:** no separate DB server; one `.sqlite` file for dev/local.
+- **TypeORM:** `better-sqlite3` driver; entity uses `simple-enum` for `status` (SQLite-friendly).
+- **Search:** `LOWER(name) LIKE LOWER(:pattern)` instead of PostgreSQL-only `ILIKE`.
 
 ### Redis
 
-- Vẫn tùy chọn: list GET cache + invalidate khi ghi. Không set `REDIS_URL` vẫn chạy đầy đủ CRUD.
+- Still optional: caches list GET responses and invalidates on writes. Full CRUD works without `REDIS_URL`.
 
 ### Soft delete & testability
 
-- Giữ nguyên: `@DeleteDateColumn`, `IResourceRepository`, `createApp({ repository, cache })` cho test.
+- Unchanged: `@DeleteDateColumn`, `IResourceRepository`, `createApp({ repository, cache })` for tests.
 
 ---
 
-## Lưu ý
+## Notes
 
-- **Backup:** copy file `SQLITE_DATABASE` (ví dụ `data/app.sqlite`).
-- **Concurrent writes:** SQLite phù hợp dev/small traffic; traffic lớn nên cân nhắc PostgreSQL/MySQL.
-- **`.gitignore`:** thư mục `data/` và `*.sqlite` để không commit DB local (tùy team có thể bỏ ignore nếu cần).
+- **Backup:** copy the `SQLITE_DATABASE` file (e.g. `data/app.sqlite`).
+- **Concurrent writes:** SQLite suits dev/small traffic; for heavy load consider PostgreSQL/MySQL.
+- **`.gitignore`:** `data/` and `*.sqlite` exclude local DB from commits (adjust per team policy).
