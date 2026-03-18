@@ -148,6 +148,12 @@ Details and examples: **Swagger UI** (`/api-docs`).
 
 ---
 
+## Deploy on Railway
+
+See **[RAILWAY.md](RAILWAY.md)** for step-by-step setup (root directory `problem-5`, env vars, optional volume for SQLite, Redis).
+
+---
+
 ## Notes
 
 - **Backup:** copy the `SQLITE_DATABASE` file (e.g. `data/app.sqlite`).
