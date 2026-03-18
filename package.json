@@ -1,0 +1,11 @@
+{
+  "name": "coding-challenge",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "pre-commit": "npm --prefix problem-5 run test"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

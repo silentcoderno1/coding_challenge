@@ -77,6 +77,21 @@ Details: [`problem-6/README.md`](problem-6/README.md).
 
 ---
 
+## Git hooks (Husky)
+
+After cloning, run at the **repository root**:
+
+```bash
+npm install          # installs Husky (git hooks)
+cd problem-5 && npm install && cd ..
+```
+
+On every **`git commit`**, tests in **`problem-5`** run. If they fail, the commit is **aborted**. Ensure `problem-5/node_modules` exists (second line above).
+
+- Skip hook (not recommended): `git commit --no-verify` or `HUSKY=0 git commit ...`
+
+---
+
 ## CI (GitHub Actions)
 
 On **push** or **pull request** to `main`, [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs `npm ci`, `npm run build`, and `npm test` in `problem-5`.
