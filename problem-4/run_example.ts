@@ -1,6 +1,8 @@
 /**
- * Run this with: npx ts-node problem-4/run_example.ts
- * Or: npx tsx problem-4/run_example.ts
+ * From repo root:
+ *   npx ts-node --project problem-4/tsconfig.json problem-4/run_example.ts
+ * From problem-4/:
+ *   npx ts-node run_example.ts
  */
 import { sum_to_n_a, sum_to_n_b, sum_to_n_c } from "./sum_to_n";
 

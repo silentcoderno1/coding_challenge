@@ -14,13 +14,22 @@ Three TypeScript implementations of **sum_to_n(n)** = 1 + 2 + … + n (e.g. `sum
 
 ## Run
 
-From repo root:
+**Why `--project problem-4/tsconfig.json`:** Node’s ESM loader does not resolve extensionless imports like `./sum_to_n`. The local `tsconfig` uses **CommonJS** so `ts-node` resolves `sum_to_n.ts` correctly.
+
+From **repo root**:
 
 ```bash
-npx ts-node problem-4/run_example.ts
+npx ts-node --project problem-4/tsconfig.json problem-4/run_example.ts
 ```
 
-Or with tsx:
+From **`problem-4/`**:
+
+```bash
+cd problem-4
+npx ts-node run_example.ts
+```
+
+Or with **tsx** (often works without extra flags):
 
 ```bash
 npx tsx problem-4/run_example.ts

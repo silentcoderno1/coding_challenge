@@ -12,8 +12,8 @@ This repository contains **three parts** (one folder per problem). Each folder h
 | **How to run** | TypeScript only — no server or database. |
 
 ```bash
-cd problem-4
-npx ts-node run_example.ts
+npx ts-node --project problem-4/tsconfig.json problem-4/run_example.ts
+# or: cd problem-4 && npx ts-node run_example.ts
 ```
 
 Details: [`problem-4/README.md`](problem-4/README.md).
