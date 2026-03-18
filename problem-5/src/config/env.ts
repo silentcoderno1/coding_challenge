@@ -23,7 +23,7 @@ function getEnvNumber(key: string, defaultValue: number): number {
   return n;
 }
 
-/** When true, TypeORM synchronize runs even in production (e.g. Railway + SQLite without migrations). */
+/** When true, TypeORM synchronize runs even in production (e.g. SQLite without migrations on a host). */
 function getEnvBool(key: string, defaultValue: boolean): boolean {
   const v = process.env[key];
   if (v === undefined || v === "") return defaultValue;
@@ -37,7 +37,7 @@ export const env = {
   /** SQLite file path (relative to cwd or absolute), e.g. data/app.sqlite */
   SQLITE_DATABASE: getEnv("SQLITE_DATABASE", "data/app.sqlite"),
   REDIS_URL: process.env.REDIS_URL ?? "",
-  /** Set true on PaaS (Railway) when using SQLite without migrations */
+  /** Set true in production when using SQLite without migrations */
   DB_SYNCHRONIZE: getEnvBool("DB_SYNCHRONIZE", false),
 } as const;
 

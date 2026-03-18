@@ -46,8 +46,6 @@ Docker (app + Redis, SQLite in a volume):
 docker compose up --build
 ```
 
-**Railway:** set service root to `problem-5`, then follow [`problem-5/RAILWAY.md`](problem-5/RAILWAY.md).
-
 Details: [`problem-5/README.md`](problem-5/README.md).
 
 ---
