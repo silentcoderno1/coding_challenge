@@ -94,8 +94,8 @@ describe("ResourceService", () => {
       const result = await service.updateResource("uuid-1", dto);
       expect(mockRepository.updateResource).toHaveBeenCalledWith("uuid-1", dto);
       expect(mockCache.invalidate).toHaveBeenCalled();
-      // expect(result).toEqual(mockResource);
-      expect(result).toEqual({});
+      expect(result).toEqual(mockResource);
+      // expect(result).toEqual({"1": 1});
     });
 
     it("throws NotFoundError when repository returns null", async () => {
